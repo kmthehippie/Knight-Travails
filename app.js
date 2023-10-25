@@ -29,23 +29,29 @@ const Gameboard = function(){
             }  
         }
         cells[i].addEventListener("click", ()=>{
-            if (cells[i].classList[2] === "active" || cells[i].classList[1] === "active" ){
-                console.log("Do Nothing")
-                return
+            if (currentPos === undefined) {
+                firstKnightPos(cells,i)
+                currentPos = cells[i].id
+            } else if (currentPos !== undefined){
+                console.log(currentPos)
             }
-            if (cells[i].classList[1] === "black-cell") {   
-                drawKnightOL(cells[i])
-                cells[i].classList.add("active")
-            } else {
-                drawKnight(cells[i])
-                cells[i].classList.add("active")
-            }
-            
-            
         })
+        }
+}
+
+
+const firstKnightPos = function(a, i){
+    if (a[i].classList[2] === "active" || a[i].classList[1] === "active" ){
+        console.log("Do Nothing")
+        return
     }
-
-
+    if (a[i].classList[1] === "black-cell") {   
+        drawKnightOL(a[i])
+        a[i].classList.add("active")
+    } else {
+        drawKnight(a[i])
+        a[i].classList.add("active")
+    }  
 }
 
 
