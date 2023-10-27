@@ -3,6 +3,7 @@ const Gb = {
     currentPos: [],
     futurePos: [],
     board: [],
+    steps: [],
     spawnBoard: ()=>{
         const row = 8;
         const column = 8;
@@ -42,10 +43,9 @@ const Gb = {
                     if (Gb.futurePos.length !== 0){
                         Gb.futurePos.pop();
                     }
-
                     Gb.futurePos.push(+cells[i].id[1], +cells[i].id[4])               
-
-                    knightMoves(Gb.board, Gb.currentPos, Gb.futurePos)
+                    Gb.steps = knightMoves(Gb.board, Gb.currentPos, Gb.futurePos)
+                    Gb.drawingSteps(cells)
                 }
             })
             }
@@ -71,22 +71,73 @@ const Gb = {
         knightImgOL.src = "images/knightOL.png";
         knightImgOL.classList = "knight-img";
         mainDiv.appendChild(knightImgOL);
+    },
+    drawingSteps: function(cells){
+        Gb.steps.forEach(step=>{
+            console.log(step)
+            let stepIndex = findIndex(Gb.board, step)
+            Gb.firstKnightPos(cells, stepIndex)
+        })
     }
+
     
 }
 
 const knightMoves = function(board, start, end){
-    console.log(board, start, end)
     let startInd = findIndex(board, start)
     let endInd = findIndex(board, end)
     let infoArr = createInfoArr(board, startInd)
     let adjList = createAdjList(board)
-    // let queue = new Queue();
-    // queue.enqueue[startInd]
+    let queue = new Queue();
+    let steps = [];
+    queue.enqueue(startInd);
+    let toDeq;
+    toDeq = queue.items[0]
 
-    
-return knightPossMoves(start)
-    
+//BFS
+    while(toDeq != endInd) {
+        toDeq = queue.dequeue()
+        for (let i=0; i < adjList[toDeq].length; i++){           
+            let neighbour = adjList[toDeq][i];
+            // find position equivalent in board
+            let neighbourIndex = findIndex(board, neighbour)
+            if(neighbourIndex === endInd){
+                infoArr[neighbourIndex].predecessor = toDeq;
+                infoArr[neighbourIndex].distance = infoArr[toDeq].distance +1;
+                steps = predecessorFn(board, infoArr, toDeq, steps);
+                let printingSteps = printSteps(steps)
+                console.log(`Starting Point: ${board[startInd]} \nEnding Point: ${board[endInd]} \nMinimum steps: ${infoArr[neighbourIndex].distance} steps.`)
+                console.log(`The steps are: ${printingSteps}${board[endInd]}`)
+                steps.shift()
+                steps.push(board[endInd])
+                return steps
+            } else {
+                if(infoArr[neighbourIndex].distance === null){
+                    infoArr[neighbourIndex].distance = infoArr[toDeq].distance +1;
+                    infoArr[neighbourIndex].predecessor = toDeq;
+                    queue.enqueue(neighbourIndex)                              
+                }
+            }
+        } 
+    }
+}
+
+const predecessorFn = function (board, infoArr, toDeq, steps){
+   let distance = infoArr[toDeq].distance   
+   let pred = toDeq;
+   steps = [board[toDeq]];
+   for (let i = distance; i > 0; i--){
+    pred = infoArr[pred].predecessor
+    steps.unshift(board[pred])
+   }
+   return steps;
+}
+const printSteps = function(steps){
+    let s = "\n";
+    steps.forEach(step=>{
+        s += `${step.toString()} \n`
+    })
+    return s
 }
 const removeOffTheBoard = function(l){
     let newArr = []
@@ -115,7 +166,6 @@ const knightPossMoves = function(pos){
     list = [pmOne, pmTwo, pmThree, pmFour, pmFive, pmSix, pmSeven, pmEight];
     return removeOffTheBoard(list);        
 }
-
 const findIndex = function(board, toFind){
     let index;
     board.forEach(pos=>{
@@ -125,8 +175,6 @@ const findIndex = function(board, toFind){
     })
     return index
 }
-
-
 const createInfoArr = function (board, startInd){
     let newArr = []
     for (let i =0; i < board.length; i++){
@@ -138,7 +186,6 @@ const createInfoArr = function (board, startInd){
     newArr[startInd].distance = 0;
     return newArr
 }
-
 const createAdjList = function(board){
     let adjList = [];
     for (let i =0; i < board.length; i ++){
@@ -148,35 +195,8 @@ const createAdjList = function(board){
         }
         adjList[i] =  neighbours
     }
-    console.log(adjList)
+    return adjList
 }
-
-const doBFS = function(graph, source) {
-    // let bfsInfo = [];
-    // for (let i =0; i < graph.length; i++){
-    //     bfsInfo[i] = {
-    //         distance: null,
-    //         predecessor: null
-    //     }
-    // }
-    // bfsInfo[source].distance = 0;
-
-    let queue = new Queue();
-    queue.enqueue(source);
-    while(!queue.isEmpty()){
-        let toDeq = queue.dequeue();
-        for (let i=0; i < graph[toDeq].length; i++){
-            let neighbour = graph[toDeq][i];
-            if (bfsInfo[neighbour].distance === null){
-                bfsInfo[neighbour].distance = bfsInfo[toDeq].distance + 1;
-                bfsInfo[neighbour].predecessor = toDeq;
-                queue.enqueue(neighbour)
-            }
-        }
-    }
-    return bfsInfo
-}
-
 class Queue {
     constructor() {
         this.items = [];
@@ -191,8 +211,6 @@ class Queue {
         return this.items.length === 0;
     }
 }
-
-
 export const Start = function(){
     const startBtn = document.querySelector("#start-btn");
    
