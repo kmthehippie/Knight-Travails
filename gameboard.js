@@ -8,7 +8,6 @@ const Gb = {
         const row = 8;
         const column = 8;
         const boardDiv = document.querySelector(".gameboard");
-
     
         for (let r=0; r < row; r++){
             for(let c=0; c < column; c++){
@@ -17,6 +16,7 @@ const Gb = {
                 createCell.id = `[${r}, ${c}]`
                 Gb.board.push([r, c]);
                 boardDiv.appendChild(createCell)
+                
             }
         }
     
