@@ -16,9 +16,13 @@ const Gb = {
                 createCell.id = `[${r}, ${c}]`
                 Gb.board.push([r, c]);
                 boardDiv.appendChild(createCell)
-                
+
             }
         }
+        const top = document.querySelector(".top")
+        const left = document.querySelector(".left")
+        top.classList.remove("inactive");
+        left.classList.remove("inactive");
     
         const cells = document.querySelectorAll(".cell")
         for(let i = 0; i < Gb.board.length; i++){

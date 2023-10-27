@@ -80,3 +80,22 @@ button.inactive{
     border-radius: 1rem;
     font-size: 14px;
 }
+
+.top{
+    display: flex;
+}
+.numberedCells{
+    width: 16px;
+    height: 16px;
+    padding: 1rem;
+    border: 1px solid black; 
+}
+.top.inactive{
+    display: none;
+}
+.left.inactive{
+    display: none;
+}
+.left-board{
+    display: flex;
+}
