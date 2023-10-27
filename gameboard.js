@@ -7,7 +7,6 @@ const Gb = {
     spawnBoard: ()=>{
         const row = 8;
         const column = 8;
-
         const boardDiv = document.querySelector(".gameboard");
 
     
@@ -40,16 +39,22 @@ const Gb = {
                 } else if (Gb.currentPos.length !== 0){
                     //get the position where they want the knight to go as the second selection to run
                     //function to find how many moves to get to where they want
-                    if (Gb.futurePos.length !== 0){
-                        Gb.futurePos.pop();
+                    // if (Gb.futurePos.length !== 0){
+                    //     Gb.futurePos.pop();
+                    // }
+                    if(Gb.futurePos.length > 1){
+                        location.reload();
+                    } else {
+                        Gb.futurePos.push(+cells[i].id[1], +cells[i].id[4])               
+                        Gb.steps = knightMoves(Gb.board, Gb.currentPos, Gb.futurePos)
+                        Gb.drawingSteps(cells)
+                        Gb.printSteps();
                     }
-                    Gb.futurePos.push(+cells[i].id[1], +cells[i].id[4])               
-                    Gb.steps = knightMoves(Gb.board, Gb.currentPos, Gb.futurePos)
-                    Gb.drawingSteps(cells)
+                    
                 }
             })
             }
-            
+            Gb.refreshBtn();
     },
     firstKnightPos: function(a, i){
         if (a[i].classList[1] === "black-cell") {   
@@ -74,10 +79,31 @@ const Gb = {
     },
     drawingSteps: function(cells){
         Gb.steps.forEach(step=>{
-            console.log(step)
             let stepIndex = findIndex(Gb.board, step)
             Gb.firstKnightPos(cells, stepIndex)
         })
+    },
+    refreshBtn: function(){
+        const refreshDiv = document.querySelector(".refresh")
+        const refreshBtn = document.createElement("button");
+        refreshBtn.textContent = "Refresh";
+        refreshBtn.style.margin = "20px";
+        refreshDiv.appendChild(refreshBtn);
+        refreshBtn.addEventListener("click",()=>{
+            location.reload();
+        })       
+    },
+    printSteps: function(){
+        const stepsDiv = document.querySelector(".steps");
+        const createText = document.createElement("div");
+        let s = "";
+        let a = [...Gb.steps]
+        a.forEach(step=>{
+            s += " to " + step.toString()  
+        })
+        createText.textContent = `${Gb.currentPos} ${s}`
+        stepsDiv.appendChild(createText)
+
     }
 
     
@@ -189,7 +215,7 @@ const createInfoArr = function (board, startInd){
 const createAdjList = function(board){
     let adjList = [];
     for (let i =0; i < board.length; i ++){
-        let neighbours
+        let neighbours;
         for (let j = 0; j < 8; j ++){
             neighbours = knightPossMoves(board[i])
         }
